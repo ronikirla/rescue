@@ -65,17 +65,18 @@ function pyGenerateRevivalPassword(passwordSymbols) {
   return revival;
 }
 
-function pyGenerateRescuePassword(dungeon, floor, reward) {
+function pyGenerateRescuePassword(dungeon, floor, reward, number) {
   // Generate a rescue password given dungeon, floor, and team
 
   window.dungeon = dungeon
   window.floor = floor
   window.reward = reward
+  window.number = number
 
   let rescue = pyodide.runPython(`
-    from js import dungeon, floor, reward
+    from js import dungeon, floor, reward, number
 
-    rescue = RescueCode.from_scratch(dungeon_name=dungeon, floor=floor, reward=reward)
+    rescue = RescueCode.from_scratch(dungeon_name=dungeon, floor=floor, reward=reward, number=number)
 
     symbols = code_to_symbols(rescue)
     password = rescue_password_from_text("".join(symbols))
@@ -272,10 +273,15 @@ const submitRescueInfo = function () {
   let dungeon = document.getElementById("rescue-dungeon").selectedOptions[0].value;
   let floor = document.getElementById("rescue-floor").value;
   let reward = document.getElementById("reward-type").selectedOptions[0].value;
+  let number = parseInt(document.getElementById("code-number").value);
 
   if (floor === "") {
     document.getElementById("choose-a-floor").classList.remove("hidden");
     return;
+  }
+
+  if (!number > 0) {
+    number = 1;
   }
 
   document.getElementById("generating-rescue").classList.remove("hidden");
@@ -284,7 +290,7 @@ const submitRescueInfo = function () {
   setTimeout(() => {
     let rescuePassword;
     try {
-      rescuePassword = pyGenerateRescuePassword(dungeon, parseInt(floor), reward);
+      rescuePassword = pyGenerateRescuePassword(dungeon, parseInt(floor), reward, number);
     } catch {
       // The password was invalid, probably because of floor being out of range
       document.getElementById("floor-invalid").classList.remove("hidden");

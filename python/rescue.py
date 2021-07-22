@@ -517,6 +517,7 @@ class RescueCode:
     unk1: int = 0
     unk2: int = 0
     type: int = 0  # this is always 0 for rescue codes
+    number: int = 1
 
     @classmethod
     def from_password(cls, password: Password):
@@ -562,6 +563,7 @@ class RescueCode:
         dungeon_name: str,
         floor: int,
         reward: str,
+        number: int,
         team_name: str = "tusharc.dev",
         pokemon: str = "Spheal",
         gender: str = "Male",
@@ -581,6 +583,7 @@ class RescueCode:
             raise
 
         info["floor"] = floor
+        info["number"] = number
         info["team_name"] = get_team_numbers(team_name)
         info["timestamp"] = int(datetime.now().timestamp()) - 65535
 
@@ -701,6 +704,7 @@ def rescue_password_from_text(text: str) -> Password:
 def code_to_symbols(info: Union[RescueCode, RevivalCode]) -> List[str]:
     """Given a code, generate the symbols (1h Pe etc.) that comprise the code in-game."""
 
+    number = 1
     writer = BitstreamWriter()
     writer.write(info.timestamp, 32)
     writer.write(info.type, 1)
@@ -717,6 +721,7 @@ def code_to_symbols(info: Union[RescueCode, RevivalCode]) -> List[str]:
         writer.write(info.gender, 2)
         writer.write(info.reward, 2)
         writer.write(info.unk2, 1)
+        number = info.number
     else:
         writer.write(info.revive, 30)
 
@@ -765,7 +770,7 @@ def code_to_symbols(info: Union[RescueCode, RevivalCode]) -> List[str]:
     
     passwords.sort(key=lambda x: (-x[1], x[2]))
 
-    return passwords[0][0]
+    return passwords[number - 1][0]
 
 
 if __name__ == "__main__":
