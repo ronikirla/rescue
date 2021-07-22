@@ -1,5 +1,8 @@
 # Pokemon Mystery Dungeon Rescue Team: DX Password Tool
 
+## Simplified codes
+This fork of the password generator is optimized to generate as easy to type codes as possible. Original contents of readme are below.
+
 
 ## Development
 **tl;dr**: Clone the repo and run `npm install`. This should be enough, but this is my first time developing with NPM, so who knows. You'll also need to comment out the line `<base href="/rescue/">` in [index.html](https://github.com/tuchandra/rescue/blob/master/index.html).
