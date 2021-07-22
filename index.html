@@ -9,7 +9,7 @@
   <meta name="description" content="Pokemon Mystery Dungeon - Rescue Generator">
   <meta name="author" content="Tushar Chandra">
   <meta name="theme-color" content="#def2d9">
-  <base href="/rescue/">
+  <!--<base href="/rescue/">-->
 
   <link rel="stylesheet" href="generated/tailwind.css">
   <script>window.languagePluginUrl = 'pyodide_min/';</script>
@@ -32,6 +32,134 @@
         Or you can generate <span class="font-bold">rescue passwords</span> to go on as many missions as you want.
       </span>
     </div>
+  </div>
+
+  <div class="max-w-4xl text-center items-center container py-12">
+    <div class="text-4xl text-gray-800 font-bold bg-blue-300 rounded-t-full">
+      Rescue Password Generator
+    </div>
+
+    <div class="bg-gray-100 flex-row">
+      <div class="text-xl pt-4 text-gray-800">
+        Want to go on a rescue? Just enter the dungeon and floor!
+      </div>
+      <div class="text-md py-2 text-gray-600">
+        (The Pokémon to rescue and team name are chosen so that the code will be easy to type.)
+      </div>
+
+      <div class="mt-4 pl-4 flex flex-wrap justify-center">
+        <select class="form-select m-4 inline-block text-xl" id="rescue-dungeon">
+          <option value="Tiny Woods">Tiny Woods</option>
+          <option value="Thunderwave Cave">Thunderwave Cave</option>
+          <option value="Mt. Steel">Mt. Steel</option>
+          <option value="Sinister Woods">Sinister Woods</option>
+          <option value="Silent Chasm">Silent Chasm</option>
+          <option value="Mt. Thunder">Mt. Thunder</option>
+          <option value="Great Canyon">Great Canyon</option>
+          <option value="Lapis Cave">Lapis Cave</option>
+          <option value="Mt. Blaze">Mt. Blaze</option>
+          <option value="Frosty Forest">Frosty Forest</option>
+          <option value="Mt. Freeze">Mt. Freeze</option>
+          <option value="Magma Cavern">Magma Cavern</option>
+          <option value="Sky Tower">Sky Tower</option>
+          <option value="Uproar Forest">Uproar Forest</option>
+          <option value="Waterfall Pond">Waterfall Pond</option>
+          <option value="Desert Region">Desert Region</option>
+          <option value="Southern Cavern">Southern Cavern</option>
+          <option value="Wyvern Hill">Wyvern Hill</option>
+          <option value="Darknight Relic">Darknight Relic</option>
+          <option value="Unown Relic">Unown Relic</option>
+          <option value="Grand Sea">Grand Sea</option>
+          <option value="Far-Off Sea">Far-Off Sea</option>
+          <option value="Howling Forest">Howling Forest</option>
+          <option value="Stormy Sea">Stormy Sea</option>
+          <option value="Buried Relic">Buried Relic</option>
+          <option value="Solar Cave">Solar Cave</option>
+          <option value="Fiery Field">Fiery Field</option>
+          <option value="Lightning Field">Lightning Field</option>
+          <option value="Northwind Field">Northwind Field</option>
+          <option value="Mt. Faraway">Mt. Faraway</option>
+          <option value="Western Cave">Western Cave</option>
+          <option value="Northern Range">Northern Range</option>
+          <option value="Pitfall Valley">Pitfall Valley</option>
+          <option value="Wish Cave">Wish Cave</option>
+          <option value="Joyous Tower">Joyous Tower</option>
+          <option value="Purity Forest">Purity Forest</option>
+          <option value="Murky Cave">Murky Cave</option>
+          <option value="Silver Trench">Silver Trench</option>
+          <option value="Oddity Cave">Oddity Cave</option>
+          <option value="Remains Island">Remains Island</option>
+          <option value="Marvelous Sea">Marvelous Sea</option>
+          <option value="Fantasy Strait">Fantasy Strait</option>
+        </select>
+
+        <input class="form-input m-4 inline-block w-24 text-xl" placeholder="Floor" id="rescue-floor">
+
+        <select class="form-select m-4 inline-block text-xl" id="reward-type">
+          <option value="Regular">Regular reward</option>
+          <option value="Special">Special reward</option>
+          <option value="Deluxe" selected>Deluxe reward</option>
+        </select>
+      </div>
+
+      <div class="text-xl pb-4 hidden" id="choose-a-floor">You must choose a floor!</div>
+      <div class="text-xl pb-4 hidden" id="floor-invalid">Looks like that rescue can't exist. Is the floor correct?
+      </div>
+
+      <button class="py-2 px-16 my-4 rounded-full text-2xl text-gray-800 bg-blue-300"
+        onclick="submitRescueInfo()">Go!</button>
+
+      <div class="text-xl pb-4 hidden" id="generating-rescue">Generating. Please wait for a few seconds...</div>
+      <div class="text-xl pb-4 hidden" id="rescue-password-text">Here is your rescue password!</div>
+      <div id="generated-password" class="py-0 flex flex-wrap justify-center">
+        <div class="py-2 px-2">
+          <button type="button"></button>
+          <button type="button"></button>
+          <button type="button"></button>
+          <button type="button"></button>
+          <button type="button"></button>
+        </div>
+        <div class="py-2 px-2">
+          <button type="button"></button>
+          <button type="button"></button>
+          <button type="button"></button>
+          <button type="button"></button>
+          <button type="button"></button>
+        </div>
+        <div class="py-2 px-2">
+          <button type="button"></button>
+          <button type="button"></button>
+          <button type="button"></button>
+          <button type="button"></button>
+          <button type="button"></button>
+        </div>
+        <div class="py-2 px-2">
+          <button type="button"></button>
+          <button type="button"></button>
+          <button type="button"></button>
+          <button type="button"></button>
+          <button type="button"></button>
+        </div>
+        <div class="py-2 px-2">
+          <button type="button"></button>
+          <button type="button"></button>
+          <button type="button"></button>
+          <button type="button"></button>
+          <button type="button"></button>
+        </div>
+        <div class="py-2 px-2">
+          <button type="button"></button>
+          <button type="button"></button>
+          <button type="button"></button>
+          <button type="button"></button>
+          <button type="button"></button>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="py-4 bg-blue-300 rounded-b-full"></div>
+
   </div>
 
   <div class="max-w-4xl text-center items-center container">
@@ -173,6 +301,7 @@
       <button class="py-2 px-4 mb-4 rounded-full text-2xl text-gray-800 bg-blue-300"
         onclick="submitPassword()">Submit!</button>
 
+        <div class="text-xl pb-4 hidden" id="generating-revival">Generating. Please wait for a few seconds...</div>
       <div class="text-xl pb-4 hidden" id="revival-password-text">Here is your revival password!</div>
 
       <div id="password-output" class="py-0 flex flex-wrap justify-center hidden">
@@ -224,128 +353,6 @@
 
     <!-- Footer -->
     <div class="py-4 bg-blue-300 rounded-b-full"></div>
-  </div>
-
-  <div class="max-w-4xl text-center items-center container py-12">
-    <div class="text-4xl text-gray-800 font-bold bg-blue-300 rounded-t-full">
-      Rescue Password Generator
-    </div>
-
-    <div class="bg-gray-100 flex-row">
-      <div class="text-xl pt-4 text-gray-800">
-        Want to go on a rescue? Just enter the dungeon and floor!
-      </div>
-      <div class="text-md py-2 text-gray-600">
-        (Deluxe reward is guaranteed. The Pokemon to rescue is chosen randomly.)
-      </div>
-
-      <div class="mt-4 pl-4 flex flex-wrap justify-center">
-        <select class="form-select m-4 inline-block text-xl" id="rescue-dungeon">
-          <option value="Tiny Woods">Tiny Woods</option>
-          <option value="Thunderwave Cave">Thunderwave Cave</option>
-          <option value="Mt. Steel">Mt. Steel</option>
-          <option value="Sinister Woods">Sinister Woods</option>
-          <option value="Silent Chasm">Silent Chasm</option>
-          <option value="Mt. Thunder">Mt. Thunder</option>
-          <option value="Great Canyon">Great Canyon</option>
-          <option value="Lapis Cave">Lapis Cave</option>
-          <option value="Mt. Blaze">Mt. Blaze</option>
-          <option value="Frosty Forest">Frosty Forest</option>
-          <option value="Mt. Freeze">Mt. Freeze</option>
-          <option value="Magma Cavern">Magma Cavern</option>
-          <option value="Sky Tower">Sky Tower</option>
-          <option value="Uproar Forest">Uproar Forest</option>
-          <option value="Waterfall Pond">Waterfall Pond</option>
-          <option value="Desert Region">Desert Region</option>
-          <option value="Southern Cavern">Southern Cavern</option>
-          <option value="Wyvern Hill">Wyvern Hill</option>
-          <option value="Darknight Relic">Darknight Relic</option>
-          <option value="Unown Relic">Unown Relic</option>
-          <option value="Grand Sea">Grand Sea</option>
-          <option value="Far-Off Sea">Far-Off Sea</option>
-          <option value="Howling Forest">Howling Forest</option>
-          <option value="Stormy Sea">Stormy Sea</option>
-          <option value="Buried Relic">Buried Relic</option>
-          <option value="Solar Cave">Solar Cave</option>
-          <option value="Fiery Field">Fiery Field</option>
-          <option value="Lightning Field">Lightning Field</option>
-          <option value="Northwind Field">Northwind Field</option>
-          <option value="Mt. Faraway">Mt. Faraway</option>
-          <option value="Western Cave">Western Cave</option>
-          <option value="Northern Range">Northern Range</option>
-          <option value="Pitfall Valley">Pitfall Valley</option>
-          <option value="Wish Cave">Wish Cave</option>
-          <option value="Joyous Tower">Joyous Tower</option>
-          <option value="Purity Forest">Purity Forest</option>
-          <option value="Murky Cave">Murky Cave</option>
-          <option value="Silver Trench">Silver Trench</option>
-          <option value="Oddity Cave">Oddity Cave</option>
-          <option value="Remains Island">Remains Island</option>
-          <option value="Marvelous Sea">Marvelous Sea</option>
-          <option value="Fantasy Strait">Fantasy Strait</option>
-        </select>
-
-        <input class="form-input m-4 inline-block w-24 text-xl" placeholder="Floor" id="rescue-floor">
-        <input class="form-input m-4 inline-block text-xl" placeholder="Team Name (Optional)" id="rescue-team">
-      </div>
-
-      <div class="text-xl pb-4 hidden" id="choose-a-floor">You must choose a floor!</div>
-      <div class="text-xl pb-4 hidden" id="floor-invalid">Looks like that rescue can't exist. Is the floor correct?
-      </div>
-
-      <button class="py-2 px-16 my-4 rounded-full text-2xl text-gray-800 bg-blue-300"
-        onclick="submitRescueInfo()">Go!</button>
-
-      <div class="text-xl pb-4 hidden" id="rescue-password-text">Here is your rescue password!</div>
-      <div id="generated-password" class="py-0 flex flex-wrap justify-center">
-        <div class="py-2 px-2">
-          <button type="button"></button>
-          <button type="button"></button>
-          <button type="button"></button>
-          <button type="button"></button>
-          <button type="button"></button>
-        </div>
-        <div class="py-2 px-2">
-          <button type="button"></button>
-          <button type="button"></button>
-          <button type="button"></button>
-          <button type="button"></button>
-          <button type="button"></button>
-        </div>
-        <div class="py-2 px-2">
-          <button type="button"></button>
-          <button type="button"></button>
-          <button type="button"></button>
-          <button type="button"></button>
-          <button type="button"></button>
-        </div>
-        <div class="py-2 px-2">
-          <button type="button"></button>
-          <button type="button"></button>
-          <button type="button"></button>
-          <button type="button"></button>
-          <button type="button"></button>
-        </div>
-        <div class="py-2 px-2">
-          <button type="button"></button>
-          <button type="button"></button>
-          <button type="button"></button>
-          <button type="button"></button>
-          <button type="button"></button>
-        </div>
-        <div class="py-2 px-2">
-          <button type="button"></button>
-          <button type="button"></button>
-          <button type="button"></button>
-          <button type="button"></button>
-          <button type="button"></button>
-        </div>
-      </div>
-
-    </div>
-
-    <div class="py-4 bg-blue-300 rounded-b-full"></div>
-
   </div>
 
 </body>

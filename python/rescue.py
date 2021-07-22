@@ -323,10 +323,121 @@ def checksum(code: Password) -> int:
     calc ^= 0xFF
     return calc
 
+def fix_checksum(code: Password) -> Password:
+    """
+    Calculate the checksum of the code, then modify the timestamp (2nd least significant byte)
+    so that the calculated checksum matches the one in the code
+    """
+    target = code[0]
+    newcode = code[1:]
+    initial = checksum(newcode)
+    timestamp = newcode[1]
+    diff = target - initial
+    # +1 to timestamp = -1 to checksum
+    timestamp -= diff
+    while timestamp < 0:
+        timestamp += 256
+        timestamp -= 1
+    while timestamp > 255:
+        timestamp -= 256
+        timestamp += 1
+    newcode[1] = timestamp
+    #assert(checksum(newcode) == target)
+    return [target] + newcode
+
+def simplify(info, code: Password) -> Password:
+    """
+    Adjust all irrelevants parts of the encrypted code to values that result in as many
+    repeated characters as possible to make the code easier to type.
+    """
+
+    rng = DotNetRNG(code[0] | code[1] << 8)
+    deltas = []
+    deltas.append(0)
+    deltas.append(0)
+    for _ in range(2, len(code)):
+        deltas.append(rng.next() & 0xFF)
+    newcode = code.copy()
+
+    def changed_byte(dec_byte, delta, target_byte, mask):
+        enc_byte = dec_byte + delta
+        changed_byte = (target_byte & mask) | (enc_byte & ~mask)
+        return ((changed_byte - delta) & mask) | (dec_byte & ~mask)
+
+    """
+    00000 AABBC DDEfF
+    FFFFF FxFFF GHIII
+    """
+
+    A = ((newcode[20] + deltas[20]) & 0x0C) >> 2
+    B = (((newcode[4] + deltas[4]) & 0xF0) >> 4) | (((newcode[5] + deltas[5]) & 0x01) << 4) | (A & 0x20)
+    D = (((newcode[19] + deltas[19]) & 0xF0) >> 4) | (((newcode[20] + deltas[20]) & 0x3) << 4)
+    F = (((newcode[1] + deltas[1]) & 0xF0) >> 4) | (((newcode[2] + deltas[2]) & 0x3) << 4)
+    G = (((newcode[18] + deltas[18]) & 0xC0) >> 6) | (((newcode[19] + deltas[19]) & 0x0F) << 2)
+    H = (((newcode[22] + deltas[22]) & 0x06) << 2) | (G & 0x27)
+    I = (((newcode[0] + deltas[0]) & 0xC0) >> 6) | (((newcode[1] + deltas[1]) & 0x0F) << 2)
+
+    # 6 -> 7
+    newcode[5] = changed_byte(newcode[5], deltas[5], A >> 4, 0x02)
+    # 7 -> 4
+    newcode[5] = changed_byte(newcode[5], deltas[5], 0x00, 0xFC)
+    # 8 -> 6
+    newcode[6] = changed_byte(newcode[6], deltas[6], A, 0x3F)
+    # 9 -> 17
+    newcode[6] = changed_byte(newcode[6], deltas[6], F << 6, 0xC0)
+    newcode[7] = changed_byte(newcode[7], deltas[7], F >> 2, 0x0F)
+    # 10 -> 19
+    newcode[7] = changed_byte(newcode[7], deltas[7], F << 4, 0xF0)
+    newcode[8] = changed_byte(newcode[8], deltas[8], F >> 4, 0x03)
+    # 11 -> 16
+    newcode[8] = changed_byte(newcode[8], deltas[8], F << 2, 0xFC)
+    # 12 -> 28
+    newcode[9] = changed_byte(newcode[9], deltas[9], I, 0x3F)
+    # 13 -> 29
+    newcode[9] = changed_byte(newcode[9], deltas[9], I << 6, 0xC0)
+    newcode[10] = changed_byte(newcode[10], deltas[10], I >> 2, 0x0F)
+    # 14 -> 23
+    newcode[10] = changed_byte(newcode[10], deltas[10], F << 4, 0xF0)
+    newcode[11] = changed_byte(newcode[11], deltas[11], F >> 4, 0x03)
+    # 15 -> 20
+    newcode[11] = changed_byte(newcode[11], deltas[11], F << 2, 0xFC)
+    # 16 -> 11
+    newcode[12] = changed_byte(newcode[12], deltas[12], D, 0x3F)
+    # 17 -> 0
+    newcode[12] = changed_byte(newcode[12], deltas[12], 0x00, 0xC0)
+    newcode[13] = changed_byte(newcode[13], deltas[13], 0x00, 0x0F)
+    # 18 -> 1
+    newcode[13] = changed_byte(newcode[13], deltas[13], 0x00, 0xF0)
+    newcode[14] = changed_byte(newcode[14], deltas[14], 0x00, 0x03)
+    # 19 -> 22
+    newcode[14] = changed_byte(newcode[14], deltas[14], F << 2, 0xFC)
+    # 20 -> 24
+    newcode[15] = changed_byte(newcode[15], deltas[15], F, 0x3F)
+    # 21 -> 14
+    newcode[15] = changed_byte(newcode[15], deltas[15], F << 6, 0xC0)
+    newcode[16] = changed_byte(newcode[16], deltas[16], F >> 2, 0x0F)
+    # 22 -> 8
+    newcode[16] = changed_byte(newcode[16], deltas[16], B << 4, 0xF0)
+    newcode[17] = changed_byte(newcode[17], deltas[17], B >> 4, 0x03)
+    # 23 -> 2
+    newcode[17] = changed_byte(newcode[17], deltas[17], 0x00, 0xFC)
+    # 24 -> 15
+    newcode[18] = changed_byte(newcode[18], deltas[18], F, 0x3F)
+    if isinstance(info, RescueCode):
+        # 27 -> 5
+        newcode[20] = changed_byte(newcode[20], deltas[20], 0x00, 0xF0) # unsafe
+        # 28 -> 18
+        newcode[21] = changed_byte(newcode[21], deltas[21], F, 0x3F) # unsafe
+        # 29 -> 26
+        newcode[21] = changed_byte(newcode[21], deltas[21], H << 6, 0x80)
+        newcode[22] = changed_byte(newcode[22], deltas[22], H >> 2, 0x09) # unsafe
+    
+    newcode = fix_checksum(newcode)
+    return newcode
+
+
 
 def crc32(bytes):
-    """What is this? Some kind of validation check?"""
-
     sum = 0xFFFFFFFF
     for x in bytes:
         sum = romdata["crc32table"][(sum & 0xFF) ^ x] ^ (sum >> 8)
@@ -450,10 +561,10 @@ class RescueCode:
         cls,
         dungeon_name: str,
         floor: int,
+        reward: str,
         team_name: str = "tusharc.dev",
         pokemon: str = "Spheal",
         gender: str = "Male",
-        reward: str = "Deluxe",
     ):
         """Generate rescue code from nothing"""
 
@@ -471,7 +582,7 @@ class RescueCode:
 
         info["floor"] = floor
         info["team_name"] = get_team_numbers(team_name)
-        info["timestamp"] = int(datetime.now().timestamp())
+        info["timestamp"] = int(datetime.now().timestamp()) - 65535
 
         return cls(**info)
 
@@ -610,14 +721,51 @@ def code_to_symbols(info: Union[RescueCode, RevivalCode]) -> List[str]:
         writer.write(info.revive, 30)
 
     code = writer.finish()
-    code = [checksum(code)] + code
+    passwords = []
 
-    code = apply_crypto(code, encrypt=True)
-    code = apply_bitpack(code, 8, 6)
-    code = apply_shuffle(code, reverse=True)
+    def get_keyboard_pos(index):
+        x = index % 13
+        y = index / 13
+        return (x, y)
 
-    symbols = [get_symbol_from_index(i) for i in code]
-    return symbols
+    def get_x_dist(x0, x1):
+        return min(min(abs(x1 - x0), abs(x1-14 - x0)), abs(x1+14 - x0))
+
+    def get_y_dist(y0, y1):
+        return min(min(abs(y1 - y0), abs(y1-5 - y0)), abs(y1+5 - y0))
+
+    def get_dist(index0, index1):
+        (x0, y0) = get_keyboard_pos(index0)
+        (x1, y1) = get_keyboard_pos(index1)
+        import math
+        return math.sqrt(pow(get_x_dist(x0, x1), 2) + pow(get_y_dist(y0, y1), 2))
+        
+    for iter in range(0x00, 0x400):
+        current = code.copy()
+        target_checksum = (iter << 6) & 0xC0
+        current[0] = iter >> 2
+        current = [target_checksum] + current
+        current = fix_checksum(current)
+
+        current = simplify(info, current)
+        current = apply_crypto(current, encrypt=True)
+        current = apply_bitpack(current, 8, 6)
+        current = apply_shuffle(current, reverse=True)
+
+        symbols = [get_symbol_from_index(i) for i in current]
+        rescue = RescueCode.from_password(rescue_password_from_text("".join(symbols)))
+        if rescue.validate() or isinstance(info, RevivalCode):
+            repeats = 0
+            distance = 0
+            for i in range(1, len(current)):
+                if current[i] == current[i - 1]:
+                    repeats += 1
+                distance += get_dist(current[i - 1], current[i])
+            passwords.append((symbols, repeats, distance))
+    
+    passwords.sort(key=lambda x: (-x[1], x[2]))
+
+    return passwords[0][0]
 
 
 if __name__ == "__main__":
