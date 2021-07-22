@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "start": "static-server -p 80",
     "build": "postcss css/tailwind.css -o generated/tailwind.css",
     "watch": "watch 'npm run build:css' ./layouts",
     "prod": "cross-env NODE_ENV=production postcss css/tailwind.css -o generated/tailwind.css"
@@ -21,6 +22,7 @@
     "@tailwindcss/custom-forms": "^0.2.1",
     "autoprefixer": "^9.6.1",
     "postcss-cli": "^6.1.2",
+    "static-server": "^2.2.1",
     "tailwindcss": "^1.0.4",
     "watch": "^1.0.2"
   },
