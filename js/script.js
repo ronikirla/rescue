@@ -267,7 +267,6 @@ const submitRescueInfo = function () {
   // Submit info to generate a rescue
   document.getElementById("choose-a-floor").classList.add("hidden");
   document.getElementById("floor-invalid").classList.add("hidden");
-  document.getElementById("generating-rescue").classList.remove("hidden");
   document.getElementById("rescue-password-text").classList.add("hidden");
 
   let dungeon = document.getElementById("rescue-dungeon").selectedOptions[0].value;
@@ -278,6 +277,8 @@ const submitRescueInfo = function () {
     document.getElementById("choose-a-floor").classList.remove("hidden");
     return;
   }
+
+  document.getElementById("generating-rescue").classList.remove("hidden");
 
   // Get the rescue code, fill it in
   setTimeout(() => {
