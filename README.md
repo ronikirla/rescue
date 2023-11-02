@@ -1,7 +1,7 @@
 # Pokemon Mystery Dungeon Rescue Team: DX Password Tool
 
 ## Simplified codes
-This fork of the password generator is optimized to generate as easy to type codes as possible. Original contents of readme are below.
+This fork of the password generator is optimized to generate as easy to type codes as possible. This is accomplished by stabilizing the cipher and filling irrelevant data fields with bytes that turn into consecutive repeated characters in the end result. Currently, an active deployment can be found [here](https://ronikirla.github.io/rtdx-passwords/). Original contents of readme are below.
 
 
 ## Development
